@@ -9,7 +9,7 @@ export default {
     file: 'examples/voxel.js',
     format: 'iife',
     name: 'example',
-    sourcemap: 'inline'
+    //sourcemap: 'inline'
   },
   plugins: [
     resolve({

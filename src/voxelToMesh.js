@@ -2,10 +2,10 @@
  * exports voxel-to-mesh
  */
 
-import catmull from 'gl-catmull-clark'
 import quadsToTris from 'gl-quads-to-tris'
 
 const opts = {
+  color: null,
   convertToTriangles: true,
   flatten: true
 }
@@ -23,14 +23,19 @@ function voxelToMesh(voxelData, options) {
 
   if (opts.convertToTriangles) {
     voxObj.indices = quadsToTris(voxObj.indices)
-    voxObj.colors = voxObj.colors.reduce((arr, color) => arr.concat([color, color]),[])
+  }
+
+  if (opts.color) {
+    voxObj.colors = Array(voxObj.indices.length).fill(opts.color)
   }
 
   if (opts.flatten) {
-    const flatten = (a,b) => a.concat(b)
+    const flatten = (a, b) => a.concat(b)
     voxObj.indices = voxObj.indices.reduce(flatten, [])
     voxObj.vertices = voxObj.vertices.reduce(flatten, [])
-    voxObj.colors = voxObj.colors.reduce(flatten, [])
+    if(opts.color){
+      voxObj.colors = voxObj.colors.reduce(flatten, [])
+    }
   }
   return voxObj
 }
@@ -92,8 +97,7 @@ function newBox(xyz, cellOffset) {
     [c2, c3, c1, c0], //originals
     [c4, c5, c7, c6], //originals
 
-    [c3, c7, c5, c1].map(copy), [c0, c4, c6, c2].map(copy),
-    [c1, c5, c4, c0].map(copy), [c2, c6, c7, c3].map(copy)
+    [c3, c7, c5, c1].map(copy), [c0, c4, c6, c2].map(copy), [c1, c5, c4, c0].map(copy), [c2, c6, c7, c3].map(copy)
   ]
 
   return {
@@ -105,34 +109,38 @@ function newBox(xyz, cellOffset) {
 function parseData(voxelData) {
 
   let vertices = [],
-    indices = [],
-    colors = []
+    indices = []
   let cellOffset = 0
-  const DEFAULT_COLOR = [0,0,0,1]
+  const DEFAULT_COLOR = [0, 0, 0, 1]
   const VERTS_PER_CUBE = 8
   const FACES_PER_RECT = 6
 
-  voxelData.forEach(voxel => {
-    const cube = newBox(voxel.slice(0, 3), cellOffset)
-    cellOffset += VERTS_PER_CUBE
-    const color = voxel[3] || DEFAULT_COLOR
+  const tally = {}
 
-    vertices = vertices.concat(cube.vertices)
-    indices = indices.concat(cube.indices)
-    colors = colors.concat(Array(FACES_PER_RECT).fill(color))
+  voxelData.forEach(voxel => {
+    const key = voxel.toString()
+    if (tally[key]) {
+      console.warn(`voxel [${key}] already exists`)
+    } else {
+      tally[key] = true
+      const cube = newBox(voxel, cellOffset)
+      cellOffset += VERTS_PER_CUBE
+
+      vertices = vertices.concat(cube.vertices)
+      indices = indices.concat(cube.indices)
+    }
+
   })
 
   return {
     vertices,
-    indices,
-    colors
+    indices
   }
 }
 
 function removeDuplicateFaces({
   vertices,
-  indices,
-  colors
+  indices
 }) {
 
   const indiceMap = new Map()
@@ -163,19 +171,15 @@ function removeDuplicateFaces({
     .filter((_, i) => !indexWhackList.has(i))
     .map(rect => rect.map(ri => ri.value))
 
-  colors = colors.filter((color, i) => !indexWhackList.has(i))
-
   return {
     vertices,
-    indices,
-    colors
+    indices
   }
 }
 
 function removeUnusedVertices({
   vertices,
-  indices,
-  colors
+  indices
 }) {
   const newVertices = []
   const indexMap = new Map()
@@ -191,8 +195,7 @@ function removeUnusedVertices({
 
   return {
     'vertices': newVertices,
-    indices,
-    colors
+    indices
   }
 }
 
