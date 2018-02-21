@@ -4,7 +4,7 @@ import resolve from 'rollup-plugin-node-resolve'
 import commonjs from 'rollup-plugin-commonjs'
 
 export default {
-  input: 'examples/test.js',
+  input: 'src/test.js',
   output: {
     file: 'examples/voxel.js',
     format: 'iife',

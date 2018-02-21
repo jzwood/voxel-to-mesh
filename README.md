@@ -1,88 +1,87 @@
 # voxel-to-mesh
 
-There are a number of techniques for transforming [voxel](https://en.wikipedia.org/wiki/Voxel) data into polygonal meshes.
-The **minimum edit distance** is the integer number of character insertions, deletions, and substitutions required to transform one string into another.
+There are a number of techniques for transforming [voxel](https://en.wikipedia.org/wiki/Voxel) data
+```javascript
+  [
+    [0, 0, 0],
+    [0, 0, 1]
+  ]
+```
+into polygonal meshes
+```javascript
+{
+  vertices: [
+    [0, 1, 0],
+    [0, 1, 1],
+    [0, 0, 1],
+    [0, 0, 0],
+    [1, 0, 0],
+    [1, 0, 1],
+    [1, 1, 1],
+    [1, 1, 0],
+    [0, 1, 2],
+    [0, 0, 2],
+    [1, 0, 2],
+    [1, 1, 2]
+  ],
+  indices: [
+    [0, 1, 2, 3],
+    [4, 5, 6, 7],
+    [3, 4, 7, 0],
+    [2, 5, 4, 3],
+    [0, 7, 6, 1],
+    [1, 8, 9, 2],
+    [5, 10, 11, 6],
+    [8, 11, 10, 9],
+    [9, 10, 5, 2],
+    [1, 6, 11, 8]
+  ]
+}
+```
+Voxel-to-mesh utilizes a basic culling technique where any shared faces between voxels are pruned from the mesh. Furthermore, the vertices of these now unconnected lips are consolidated to remove T-junctions. Removing T-junctions is important for at least 2 reasons.
+1. There are instances when T-junctions can cause visible discontinuities in your mesh.
+1. Having a closed mesh is necessary for many mesh transformation algorithms such as [catmull-clark](https://en.wikipedia.org/wiki/Catmull%E2%80%93Clark_subdivision_surface) smoothing.
 
-[![Build Status](https://travis-ci.org/jzwood/minimum-edit-distance.svg?branch=master)](https://travis-ci.org/jzwood/minimum-edit-distance) [![](https://img.shields.io/badge/awesome-yes-FF7AA8.svg)](https://giphy.com/search/awesome)
-
-## Info
-The minimum edit distance on its own is, albeit interesting, not terribly useful. However, the minimum edit matrix _backtrace_ is both interesting and useful. This backtrace contains, not only all the information necessary to determine the minimum edit distance, but also the smallest amount of information required to transform the second string back into the first (see **usage** section).
+In the above example, we have two adjacent voxel cubes: `[0,0,0]` and `[0,0,1]`. They share a face so those rects can be culled. We can see the result has 10 indices (ie rects) instead of 12 (2 * 6 faces) and only 12 vertices instead of 16 (2 * 8 vertices). Culling means our meshes are smaller and will render faster.
 
 ### install
 
 ```shell
-  $ npm install minimum-edit-distance
-```
-### require
-```javascript
-  const minimumEditDistance = require('minimum-edit-distance');
+  $ npm install voxel-to-mesh
 ```
 
 ## Usage
 
 ```javascript
-  let str1 = 'dhyfldnsgagfhc';
-  let str2 = 'dososjhbabadhfhshdsjds';
+  const voxelToMesh = require('voxel-to-mesh');
 
-  let difference = minimumEditDistance.diff(str1, str2)
+  let voxels = [
+    [0, 0, 0],
+    [0, 0, 1]
+  ];
 
-  console.log(difference.distance); // 18
+  const options = {
+  	color: [0, 255, 0, 0.5], //rgba
+  	flatten: false
+  }
 
-  console.log(difference.backtrace);
-  // [ 'sc', 'sh', 'sf', 'sg', 'sa', 'sg', '1', 'sn', 'd2', '1', 'sl', 'sf', 'sy', 'd', '1', 'd5', '1' ]
-
-  /*
-   *  prefix key:
-   *    s = substitute
-   *    i = insertion
-   *    d = deletion #
-   *    # = skip num
-   */
-
-  let stringOne = minimumEditDistance.reconstruct(str2, difference.backtrace)
-
-  console.log(str1 === stringOne); // true
+  let mesh = voxelToMesh(voxels, options)
 ```
-
-## Usage for Arrays
-
-```javascript
-  let array1 = ['cat', 'fees', 'hound']
-  let array2 = ['cat', 'kite', 'undo', 'hound']
-
-  let arrayDifference = minimumEditDistance.diff(array1, array2)
-
-  console.log(arrayDifference.distance) //2
-
-  console.log(arrayDifference.backtrace) // [ '1', 'sfees', 'd', '1' ]
-
-  console.log(minimumEditDistance.reconstruct(array2, arrayDifference.backtrace)) // [ 'cat', 'fees', 'hound' ]
-```
-
 ## API
-```java
-  /**
-   * p1 - first string or array
-   * p2 - second string or array
-   * distance - integer minimum edit distance
-   * backtrace - array of strings specifying edit operations
-   */
-  diff(p1, p2, substitutionCost=1, insertionCost=1, deletionCost=1){
-    ...
-    return {"distance": distance, "backtrace": backtrace}
-  }
 
-  /**
-   * p2 - p2 used in diff
-   * trace - backtrace from diff
-   * p1 - equal to p1 used in diff
-   */
-  reconstruct(p2, trace){
-    ...
-    return p1
-  }
+```
+voxelToMesh(voxels [,options])
+
+int[][] voxels
+JSON {} options:
+	int[] color: default null
+	boolean convertToTriangles: default true,
+	boolean flatten: default true
+
+
 ```
 
 ## license
 
 MIT
+

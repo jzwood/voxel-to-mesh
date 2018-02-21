@@ -1,15 +1,13 @@
-import voxelToMesh from '../src/voxelToMesh'
+import voxelToMesh from './voxelToMesh'
 
 var canvas = document.getElementById("renderCanvas")
 var engine = new BABYLON.Engine(canvas, true)
 
-function addVoxels(voxels, rgba) {
+function addVoxels(voxels, options) {
   //Create a custom mesh
   var customMesh = new BABYLON.Mesh("custom", scene)
 
-  const mesh = voxelToMesh(voxels, {
-    color: rgba
-  })
+  const mesh = voxelToMesh(voxels, options)
 
   var positions = mesh.vertices
   var indices = mesh.indices
@@ -47,27 +45,27 @@ var createScene = function() {
 
   //x,y,z,color
   const voxels = [
-    [0, 0, 0],
-    [1, 0, 0],
-    [1, 1, 0]
+    [-1, -1, -1],
+    [0, -1, -1],
+    [0, 0, -1]
   ]
 
-  addVoxels(voxels, [0, 0, 255, 1])
+  addVoxels(voxels, {color: [0, 0, 255, 1]})
 
   const voxels2 = [
-    [0, 1, 0],
-    [0, 0, 1],
-    [0, 1, 1]
+    [-1, 0, -1],
+    [-1, -1, 0],
+    [-1, 0, 0]
   ]
 
-  addVoxels(voxels2, [255, 0, 0, 1])
+  addVoxels(voxels2, {color: [255, 0, 0, 1]})
 
   const voxels3 = [
-    [1, 0, 1],
-    [1, 1, 1]
+    [0, -1, 0],
+    [0, 0, 0]
   ]
 
-  addVoxels(voxels3, [255, 255, 255, 1])
+  addVoxels(voxels3, {color: [255, 255, 255, 1]})
 
   return scene
 }

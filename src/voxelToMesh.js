@@ -1,18 +1,18 @@
 /**
- * exports voxel-to-mesh
+ * @license MIT
+ * Copyright (c) 2018 Jake Wood
  */
 
 import quadsToTris from 'gl-quads-to-tris'
 
-const opts = {
-  color: null,
-  convertToTriangles: true,
-  flatten: true
-}
-
 export default voxelToMesh
 
 function voxelToMesh(voxelData, options) {
+  const opts = {
+    color: null,
+    convertToTriangles: true,
+    flatten: true
+  }
 
   Object.assign(opts, options)
 
@@ -33,7 +33,7 @@ function voxelToMesh(voxelData, options) {
     const flatten = (a, b) => a.concat(b)
     voxObj.indices = voxObj.indices.reduce(flatten, [])
     voxObj.vertices = voxObj.vertices.reduce(flatten, [])
-    if(opts.color){
+    if (opts.color) {
       voxObj.colors = voxObj.colors.reduce(flatten, [])
     }
   }
@@ -111,9 +111,7 @@ function parseData(voxelData) {
   let vertices = [],
     indices = []
   let cellOffset = 0
-  const DEFAULT_COLOR = [0, 0, 0, 1]
   const VERTS_PER_CUBE = 8
-  const FACES_PER_RECT = 6
 
   const tally = {}
 
@@ -198,4 +196,3 @@ function removeUnusedVertices({
     indices
   }
 }
-

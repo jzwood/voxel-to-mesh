@@ -1,7 +1,7 @@
 {
   "name": "voxelToMesh",
   "description": "Transforms voxels into a mesh, ie an array of vertices and an array indices",
-  "main": "examples/index.html",
+  "main": "src/voxelToMesh.js",
   "dependencies": {
     "gl-quads-to-tris": "^1.0.0"
   },
@@ -15,13 +15,13 @@
     "rollup-plugin-sourcemaps": "^0.4.2"
   },
   "scripts": {
-    "prepublish": "npm test",
+    "prepublish": "npm start",
     "start": "rollup -c",
-    "watch": "open examples/index.html npm start --watch"
+    "watch": "npm start && open examples/index.html && rollup -cw"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jzwood/minimum-edit-distance.git"
+    "url": "git+https://github.com/jzwood/voxel-to-mesh.git"
   },
   "keywords": ["voxel", "voxels", "mesh"],
   "author": "Jake Wood",
