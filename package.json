@@ -2,6 +2,7 @@
   "name": "voxelToMesh",
   "description": "Transforms voxels into a mesh, ie an array of vertices and an array indices",
   "main": "src/voxelToMesh.js",
+  "version": "0.0.1",
   "dependencies": {
     "gl-quads-to-tris": "^1.0.0"
   },
