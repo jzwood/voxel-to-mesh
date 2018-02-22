@@ -42,7 +42,10 @@ Voxel-to-mesh utilizes a basic culling technique where any shared faces between 
 1. There are instances when T-junctions can cause visible discontinuities in your mesh.
 1. Having a closed mesh is necessary for many mesh transformation algorithms such as [catmull-clark](https://en.wikipedia.org/wiki/Catmull%E2%80%93Clark_subdivision_surface) smoothing.
 
-In the above example, we have two adjacent voxel cubes: `[0,0,0]` and `[0,0,1]`. They share a face so those rects can be culled. We can see the result has 10 indices (ie rects) instead of 12 (2 * 6 faces) and only 12 vertices instead of 16 (2 * 8 vertices). Culling means our meshes are smaller and will render faster.
+In the above example, we have two adjacent voxel cubes: `[0,0,0]` and `[0,0,1]`. They share a face so those rects can be culled. We can see the result has 10 indices (ie rects) instead of 12 _(2 * 6 faces)_ and only 12 vertices instead of 16 _(2 * 8 vertices)_. Culling means our meshes are smaller and will render faster.
+
+1. [3 Color mesh](/Users/jake.wood/Documents/works/babylonJs/voxel/examples/index.html)
+1. [Wireframe mesh](/Users/jake.wood/Documents/works/babylonJs/voxel/examples/index.html?v=1)
 
 ### install
 
@@ -77,8 +80,6 @@ JSON {} options:
 	int[] color: default null
 	boolean convertToTriangles: default true,
 	boolean flatten: default true
-
-
 ```
 
 ## license
