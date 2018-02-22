@@ -18,13 +18,61 @@ function quadsToTris(cells) {
 
 var glQuadsToTris= quadsToTris;
 
+var slicedToArray = function () {
+  function sliceIterator(arr, i) {
+    var _arr = [];
+    var _n = true;
+    var _d = false;
+    var _e = undefined;
+
+    try {
+      for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+        _arr.push(_s.value);
+
+        if (i && _arr.length === i) break;
+      }
+    } catch (err) {
+      _d = true;
+      _e = err;
+    } finally {
+      try {
+        if (!_n && _i["return"]) _i["return"]();
+      } finally {
+        if (_d) throw _e;
+      }
+    }
+
+    return _arr;
+  }
+
+  return function (arr, i) {
+    if (Array.isArray(arr)) {
+      return arr;
+    } else if (Symbol.iterator in Object(arr)) {
+      return sliceIterator(arr, i);
+    } else {
+      throw new TypeError("Invalid attempt to destructure non-iterable instance");
+    }
+  };
+}();
+
+var toConsumableArray = function (arr) {
+  if (Array.isArray(arr)) {
+    for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
+
+    return arr2;
+  } else {
+    return Array.from(arr);
+  }
+};
+
 /**
  * @license MIT
  * Copyright (c) 2018 Jake Wood
  */
 
 function voxelToMesh$1(voxelData, options) {
-  const opts = {
+  var opts = {
     color: null,
     convertToTriangles: true,
     flatten: true
@@ -32,7 +80,7 @@ function voxelToMesh$1(voxelData, options) {
 
   Object.assign(opts, options);
 
-  let voxObj = parseData(voxelData);
+  var voxObj = parseData(voxelData);
 
   voxObj = removeDuplicateFaces(voxObj);
   voxObj = removeUnusedVertices(voxObj);
@@ -46,7 +94,9 @@ function voxelToMesh$1(voxelData, options) {
   }
 
   if (opts.flatten) {
-    const flatten = (a, b) => a.concat(b);
+    var flatten = function flatten(a, b) {
+      return a.concat(b);
+    };
     voxObj.indices = voxObj.indices.reduce(flatten, []);
     voxObj.vertices = voxObj.vertices.reduce(flatten, []);
     if (opts.color) {
@@ -57,8 +107,8 @@ function voxelToMesh$1(voxelData, options) {
 }
 
 function makeCopyCat(index) {
-  let table = new Set();
-  const makeCat = i => {
+  var table = new Set();
+  var makeCat = function makeCat(i) {
     return {
       value: i,
       get table() {
@@ -67,64 +117,90 @@ function makeCopyCat(index) {
       set table(t) {
         table = t;
       },
-      update(copyCat) {
-        table = copyCat.table = new Set([...table, ...copyCat.table]);
-        table.forEach(cat => {
+      update: function update(copyCat) {
+        table = copyCat.table = new Set([].concat(toConsumableArray(table), toConsumableArray(copyCat.table)));
+        table.forEach(function (cat) {
           cat.value = copyCat.value;
           cat.table = table;
         });
       },
-      clone() {
-        const anotherCat = makeCat(this.value);
+      clone: function clone() {
+        var anotherCat = makeCat(this.value);
         table.add(anotherCat);
         return anotherCat;
       }
     };
   };
-  const newCat = makeCat(index);
+  var newCat = makeCat(index);
   table.add(newCat);
   return newCat;
 }
 
 function newBox(xyz, cellOffset) {
-  const sumVec = (v1, v2) => v1.map((val, index) => val + v2[index]);
-  const pOffset = sumVec.bind(null, xyz);
+  var sumVec = function sumVec(v1, v2) {
+    return v1.map(function (val, index) {
+      return val + v2[index];
+    });
+  };
+  var pOffset = sumVec.bind(null, xyz);
 
-  const [a, b, c, d, e, f, g, h] = [[0, 0, 0], [0, 0, 1], [0, 1, 0], [0, 1, 1], [1, 0, 0], [1, 0, 1], [1, 1, 0], [1, 1, 1]].map(pOffset);
+  var _map = [[0, 0, 0], [0, 0, 1], [0, 1, 0], [0, 1, 1], [1, 0, 0], [1, 0, 1], [1, 1, 0], [1, 1, 1]].map(pOffset),
+      _map2 = slicedToArray(_map, 8),
+      a = _map2[0],
+      b = _map2[1],
+      c = _map2[2],
+      d = _map2[3],
+      e = _map2[4],
+      f = _map2[5],
+      g = _map2[6],
+      h = _map2[7];
 
-  const vertices = [a, b, c, d, e, f, g, h];
+  var vertices = [a, b, c, d, e, f, g, h];
 
-  const [c0, c1, c2, c3, c4, c5, c6, c7] = [0, 1, 2, 3, 4, 5, 6, 7].map(c => makeCopyCat(c + cellOffset));
+  var _map3 = [0, 1, 2, 3, 4, 5, 6, 7].map(function (c) {
+    return makeCopyCat(c + cellOffset);
+  }),
+      _map4 = slicedToArray(_map3, 8),
+      c0 = _map4[0],
+      c1 = _map4[1],
+      c2 = _map4[2],
+      c3 = _map4[3],
+      c4 = _map4[4],
+      c5 = _map4[5],
+      c6 = _map4[6],
+      c7 = _map4[7];
 
-  const copy = cat => cat.clone();
+  var copy = function copy(cat) {
+    return cat.clone();
+  };
 
-  const indices = [[c2, c3, c1, c0], //originals
+  var indices = [[c2, c3, c1, c0], //originals
   [c4, c5, c7, c6], //originals
 
   [c3, c7, c5, c1].map(copy), [c0, c4, c6, c2].map(copy), [c1, c5, c4, c0].map(copy), [c2, c6, c7, c3].map(copy)];
 
   return {
-    vertices,
-    indices
+    vertices: vertices,
+    indices: indices
   };
 }
 
 function parseData(voxelData) {
 
-  let vertices = [],
+  var vertices = [],
       indices = [];
-  let cellOffset = 0;
-  const VERTS_PER_CUBE = 8;
+  var cellOffset = 0;
+  var VERTS_PER_CUBE = 8;
 
-  const tally = {};
+  var tally = {};
 
-  voxelData.forEach(voxel => {
-    const key = voxel.toString();
+  voxelData.forEach(function (voxel) {
+    var key = voxel.toString();
     if (tally[key]) {
-      console.warn(`voxel [${key}] already exists`);
+      console.warn('voxel [' + key + '] already exists');
     } else {
       tally[key] = true;
-      const cube = newBox(voxel, cellOffset);
+      var cube = newBox(voxel, cellOffset);
       cellOffset += VERTS_PER_CUBE;
 
       vertices = vertices.concat(cube.vertices);
@@ -133,65 +209,79 @@ function parseData(voxelData) {
   });
 
   return {
-    vertices,
-    indices
+    vertices: vertices,
+    indices: indices
   };
 }
 
-function removeDuplicateFaces({
-  vertices,
-  indices
-}) {
+function removeDuplicateFaces(_ref) {
+  var vertices = _ref.vertices,
+      indices = _ref.indices;
 
-  const indiceMap = new Map();
-  const indexWhackList = new Set();
-  const keyify = arr => arr.map(v => vertices[v]).sort().join('-');
 
-  indices = indices.map((rect, index) => {
-    const key = keyify(rect.map(ri => ri.value));
+  var indiceMap = new Map();
+  var indexWhackList = new Set();
+  var keyify = function keyify(arr) {
+    return arr.map(function (v) {
+      return vertices[v];
+    }).sort().join('-');
+  };
+
+  indices = indices.map(function (rect, index) {
+    var key = keyify(rect.map(function (ri) {
+      return ri.value;
+    }));
     if (indiceMap.has(key)) {
-      const face = indiceMap.get(key);
-      const faceIndex = face.index;
+      var face = indiceMap.get(key);
+      var faceIndex = face.index;
       indexWhackList.add(index).add(faceIndex);
 
-      rect.forEach((ri, i) => {
-        const reverseIndex = 3 - i;
+      rect.forEach(function (ri, i) {
+        var reverseIndex = 3 - i;
         ri.update(face.rect[reverseIndex]);
       });
     } else {
       indiceMap.set(key, {
-        index,
-        rect
+        index: index,
+        rect: rect
       });
     }
     return rect;
-  }).filter((_, i) => !indexWhackList.has(i)).map(rect => rect.map(ri => ri.value));
+  }).filter(function (_, i) {
+    return !indexWhackList.has(i);
+  }).map(function (rect) {
+    return rect.map(function (ri) {
+      return ri.value;
+    });
+  });
 
   return {
-    vertices,
-    indices
+    vertices: vertices,
+    indices: indices
   };
 }
 
-function removeUnusedVertices({
-  vertices,
-  indices
-}) {
-  const newVertices = [];
-  const indexMap = new Map();
-  let indexCounter = 0;
-  indices = indices.map(indexArray => indexArray.map(index => {
-    if (!indexMap.has(index)) {
-      indexMap.set(index, indexCounter++);
-    }
-    const i = indexMap.get(index);
-    newVertices[i] = vertices[index];
-    return i;
-  }));
+function removeUnusedVertices(_ref2) {
+  var vertices = _ref2.vertices,
+      indices = _ref2.indices;
+
+  var newVertices = [];
+  var indexMap = new Map();
+  var indexCounter = 0;
+  indices = indices.map(function (indexArray) {
+    return indexArray.map(function (index) {
+      if (!indexMap.has(index)) {
+        indexMap.set(index, indexCounter++);
+      }
+      var i = indexMap.get(index);
+      newVertices[i] = vertices[index];
+      return i;
+    });
+  });
 
   return {
     'vertices': newVertices,
-    indices
+    indices: indices
   };
 }
 
@@ -202,7 +292,7 @@ function addVoxels(voxels, options, isWireframe) {
   //Create a custom mesh
   var customMesh = new BABYLON.Mesh("custom", scene);
 
-  const mesh = voxelToMesh$1(voxels, options);
+  var mesh = voxelToMesh$1(voxels, options);
 
   var positions = mesh.vertices;
   var indices = mesh.indices;
@@ -229,7 +319,7 @@ function addVoxels(voxels, options, isWireframe) {
   material.wireframe = isWireframe;
 }
 
-var createScene = function () {
+var createScene = function createScene() {
 
   var scene = new BABYLON.Scene(engine);
   var light = new BABYLON.HemisphericLight("HemiLight", new BABYLON.Vector3(0, 1, 0), scene);
@@ -243,27 +333,27 @@ var createScene = function () {
 
   if (v) {
     //x,y,z,color
-    const voxels = [[-1, -1, -1], [0, -1, -1], [0, 0, -1]];
+    var voxels = [[-1, -1, -1], [0, -1, -1], [0, 0, -1]];
 
     addVoxels(voxels, {
       color: [0, 0, 255, 1]
     });
 
-    const voxels2 = [[-1, 0, -1], [-1, -1, 0], [-1, 0, 0]];
+    var voxels2 = [[-1, 0, -1], [-1, -1, 0], [-1, 0, 0]];
 
     addVoxels(voxels2, {
       color: [255, 0, 0, 1]
     });
 
-    const voxels3 = [[0, -1, 0], [0, 0, 0]];
+    var voxels3 = [[0, -1, 0], [0, 0, 0]];
 
     addVoxels(voxels3, {
       color: [255, 255, 255, 1]
     });
   } else {
-    const voxels = [[0, 0, 0], [0, 0, -1], [0, -1, 0], [0, -1, -1], [-1, 0, 0], [-1, 0, -1], [-1, -1, 0], [-1, -1, -1]];
+    var _voxels = [[0, 0, 0], [0, 0, -1], [0, -1, 0], [0, -1, -1], [-1, 0, 0], [-1, 0, -1], [-1, -1, 0], [-1, -1, -1]];
 
-    addVoxels(voxels, {}, true);
+    addVoxels(_voxels, {}, true);
   }
 
   return scene;
