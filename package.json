@@ -2,7 +2,7 @@
   "name": "voxel-to-mesh",
   "description": "Transforms voxel data into a webgl compatible mesh",
   "main": "src/voxelToMesh.js",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "dependencies": {
     "gl-quads-to-tris": "^1.0.0"
   },
