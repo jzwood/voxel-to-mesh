@@ -44,8 +44,8 @@ Voxel-to-mesh utilizes a basic culling technique where any shared faces between 
 
 In the above example, we have two adjacent voxel cubes: `[0,0,0]` and `[0,0,1]`. They share a face so those rects can be culled. We can see the result has 10 indices (ie rects) instead of 12 _(2 * 6 faces)_ and only 12 vertices instead of 16 _(2 * 8 vertices)_. Culling means our meshes are smaller and will render faster.
 
-1. [3 Color mesh](/Users/jake.wood/Documents/works/babylonJs/voxel/examples/index.html)
-1. [Wireframe mesh](/Users/jake.wood/Documents/works/babylonJs/voxel/examples/index.html?v=1)
+1. [3 Color mesh](https://jzwood.github.io/voxel-to-mesh/examples/?v=1)
+1. [Wireframe mesh](https://jzwood.github.io/voxel-to-mesh/examples)
 
 ### install
 
