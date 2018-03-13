@@ -56,7 +56,7 @@ In the above example, we have two adjacent voxel cubes: `[0,0,0]` and `[0,0,1]`.
 ## Usage
 
 ```javascript
-  const voxelToMesh = require('voxel-to-mesh');
+  import voxelToMesh from 'voxel-to-mesh';
 
   let voxels = [
     [0, 0, 0],
@@ -66,7 +66,7 @@ In the above example, we have two adjacent voxel cubes: `[0,0,0]` and `[0,0,1]`.
   const options = {
   	color: [0, 255, 0, 0.5], //rgba
   	flatten: false
-  }
+  };
 
   let mesh = voxelToMesh(voxels, options)
 ```
